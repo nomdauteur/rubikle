@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html oncontextmenu="return false">
+    <head>
+        <meta charset="UTF-8">
+        <!--<meta http-equiv="refresh" content="0.5" > -->
+        <meta name="Description" CONTENT="Slicer">
+        <meta name="viewport" content="height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+        <script src="/sdk.js"></script>
+        <script src="functions.js"></script>
+      <script src="Helper.js"></script>
+      <script src="Slicer.js"></script>
+      <script src="Game.js"></script>
+      <script src="levels.js"></script>
+
+    <title>Slicer</title>
+   
+    <style>
+       
+        body {
+          -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+
+        
+        text-align:left;
+       // position: relative;
+        padding: 0px;
+        }
+
+        button {
+          background-color: rgba(0,0,50,255);
+          color: rgba(255,255,205,255);
+          border-radius: 1vmin;
+          border: 0.1vw solid #FFFFCD;
+          margin-left: 1vw;
+          margin-right: 1vw;
+        }
+
+        button:disabled {
+  color: rgba(128,128,100,150);
+  border: 0.1vw solid #888867;
+  cursor: not-allowed;
+  opacity: 0.7; /* Optional: adds transparency */
+}
+
+        p {
+          color: rgba(255,255,205,255);
+          margin-left: 2vw;
+        }
+
+h1 {
+  font-size: 3vmin;
+}
+
+div {
+  display: block;
+}
+
+    </style>
+
+    </head>
+    <body id = "body" onresize="resize()">
+      <div style="position:fixed;" id = "upper">
+        <p id="level"></p>
+        <p id="goal"></p>
+        <p id="hint"></p>
+      </div>
+      <canvas style="position:fixed;" id="canvas">
+      </canvas>
+      <div style="position:fixed;" id = "lower"/>
+        <p style="padding-left:2vw;margin-right:1vw;display:flex"><button id="retry" onclick = "retry()">Начать с начала</button>
+        <button id="check" onclick = "check()">Проверить!</button>
+        <button id="next" onclick = "next()">Перейти на новый уровень</button></p>
+        <p style="padding-left:3vw; display:none" id="score">Ваш счет: ...</p>
+      </div>
+    
+      <p id="lang" style="bottom:0px; left:95vw; position:fixed; display:none;">Language</p>
+      
+    </body>
+    
+</html>
