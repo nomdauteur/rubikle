@@ -6,12 +6,12 @@
         <meta name="Description" CONTENT="Rubikle">
         <meta name="viewport" content="height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-        <script src="/sdk.js"></script>
         <script src="rus_all_fivers.js"></script>
         <script src="eng_all_fivers.js"></script>
         <script src="functions.js"></script>
         <script src="Helper.js"></script>
         <script src="Game.js"></script>
+        <script src="Constructor.js"></script>
         <script src="levels.js"></script>
 
     <title>Rubikle</title>
@@ -58,14 +58,24 @@
     </style>
 
     </head>
-    <body id = "body" onresize="resize()">
+    <body id = "body" onload="getRandomLevel()" onresize="resize()">
       <div style="position:fixed;" id = "upper">
+        <select id="lng" onchange="changeResult()">
+  <option value="EN">EN</option>
+  <option value="RU">RU</option>
+  
+</select>
+        <textarea id = "levelText" rows = "5" cols = 5></textarea>
+        <button id="tryButton" style="top:50px;left:300px;position:absolute">Примерить</button>
         
       </div>
       <div style="position:fixed;" id="canvas">
       </div>
       
       <div style="position:fixed;" id = "lower">
+        <button id="exportButton" style="top:50px;left:-50px;position:absolute">Ок</button>
+
+        <textarea id = "res" style="left:50px;" rows = "10" cols = "100"></textarea>
         
       </div>
     

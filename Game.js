@@ -1,28 +1,21 @@
-var field;
-var c; 
-var ctx; 
-
-var BACK_COLOR="rgba(0,0,50,255)";
-var LINE_COLOR="rgba(255,255,205,255)";
-
-var CIRCLE_RADIUS=vh(20);
-
-var NUCLEUS = {
-  x: vw(50),
-  y: vh(45)
-}
-
-MOUSE_ANIMATE_TIME=-1000;
-
-var SLICER = null;
-
 var WIDTH=0;
 var HEIGHT=0;
-
 
 var isGameOn;
 
 var level_no = 0;
+var LETTERS = [[{"letter":"a","color":"#007926"},{"letter":"b","color":"#008A37"},{"letter":"c","color":"#009B48"},{"letter":"d","color":"#00AC59"},{"letter":"e","color":"#00BD6A"}],[{"letter":"f","color":"#970000"},{"letter":"g","color":"#A80000"},{"letter":"h","color":"#B90000"},{"letter":"i","color":"#CA0000"},{"letter":"j","color":"#DB0000"}],[{"letter":"k","color":"#00238B"},{"letter":"l","color":"#00349C"},{"letter":"m","color":"#0045AD"},{"letter":"n","color":"#0056BE"},{"letter":"o","color":"#0067CF"}],[{"letter":"p","color":"#BB1500"},{"letter":"q","color":"#CC2600"},{"letter":"r","color":"#DD3700"},{"letter":"s","color":"#EE4800"},{"letter":"t","color":"#FF5900"}],[{"letter":"u","color":"#BB9100"},{"letter":"v","color":"#CCA200"},{"letter":"w","color":"#DDB300"},{"letter":"x","color":"#EEC400"},{"letter":"y","color":"#FFD500"}]]
+
+var shifts = 0; //Optimal shifts n SHOULD ALWAYS be 5
+
+function display_letters() {
+  for(var i = 0; i < 5; i++) {
+    for(var j = 0; j < 5; j++) {
+      document.getElementById("word_"+(i+1)+"_pos_"+(j+1)).innerText=LETTERS[i][j]["letter"];
+      document.getElementById("word_"+(i+1)+"_pos_"+(j+1)).style.backgroundColor=LETTERS[i][j]["color"];
+    }
+  }
+}
 
 
 function resize() {
@@ -40,18 +33,13 @@ function resize() {
   WIDTH=w;
   HEIGHT=h * 9/16;
 
-ctx = document.getElementById('canvas').getContext('2d');
-ctx.font="bold 5vmin Arial";
 document.getElementById('upper').style.top = 0 +"px";
 document.getElementById('upper').style.left = (window.innerWidth-w)/2 +"px";
 document.getElementById('upper').style.width = w +"px";
 document.getElementById('upper').style.height = h * 3/16 +"px";
 
-
 document.getElementById('canvas').style.width = w +"px";
 document.getElementById('canvas').style.height = h * 9/16 +"px";
-document.getElementById('canvas').width=WIDTH;
-document.getElementById('canvas').height = HEIGHT;
 document.getElementById('canvas').style.top = h*3/16 +"px";
 document.getElementById('canvas').style.left = (window.innerWidth-w)/2 +"px";
 
@@ -60,210 +48,171 @@ document.getElementById('lower').style.height = h * 4/16 +"px";
 document.getElementById('lower').style.top = h*12/16 +"px";
 document.getElementById('lower').style.left = (window.innerWidth-w)/2 +"px";
 
-NUCLEUS = {
-  x: WIDTH/2,
-  y: HEIGHT/2
+for (var i = 1; i <=5; i++) {
+  for (var j = 1; j <=5; j++) {
+    var cell = document.getElementById("word_"+i+"_pos_"+j);
+
+    cell.style.width = w/9 +"px";
+    cell.style.height = w/9 +"px";
+    cell.style.borderRadius = "2vmin";
+    cell.style.border = "0.1vmin solid #323232";
+    cell.style.top = w/9*(i+1) +"px";
+    cell.style.left = w/9*(j+1) +"px";
+  }
 }
 
-CIRCLE_RADIUS = WIDTH/4;
+for (var i = 1; i <=5; i++) {
+  var cell = document.getElementById("left_arrow_pos_"+i);
+  cell.style.width = w/9 +"px";
+  cell.style.height = w/9 +"px";
+  cell.style.top = w/9*(i+1) +"px";
+  cell.style.left = w/9 - vmin(2)+"px";
+  cell.style.color="green";
+  cell.style.border = "0.1vmin solid #00FF00";
+  cell.style.marginRight="2vmin";
 
-if (SLICER!=null && SLICER != undefined && ctx!=null && ctx != undefined) {
-  SLICER.resize(CIRCLE_RADIUS,NUCLEUS,WIDTH,HEIGHT);
-  draw();
-}
+  cell = document.getElementById("right_arrow_pos_"+i);
+  cell.style.width = w/9 +"px";
+  cell.style.height = w/9 +"px";
+  cell.style.top = w/9*(i+1) +"px";
+  cell.style.left = w/9 * 7 +"px";
+  cell.style.color="blue";
+  cell.style.border = "0.1vmin solid #0000FF";
+  cell.style.marginLeft="2vmin";
+
+  cell = document.getElementById("up_arrow_pos_"+i);
+  cell.style.width = w/9 +"px";
+  cell.style.height = w/9 +"px";
+  cell.style.top = w/9 - vmin(2) +"px";
+  cell.style.left = w/9 * (i+1) +"px";
+  cell.style.color="yellow";
+  cell.style.border = "0.1vmin solid #FFFF00";
+  cell.style.marginBottom="4vmin";
+
+  cell = document.getElementById("down_arrow_pos_"+i);
+  cell.style.width = w/9 +"px";
+  cell.style.height = w/9 +"px";
+  cell.style.top = w/9*7 +"px";
+  cell.style.left = w/9 * (i+1) +"px";
+  cell.style.color="red";
+  cell.style.border = "0.1vmin solid #FF0000";
+  cell.style.marginTop="2vmin";
+  }
+
+
+//setField();
 }
 window.addEventListener('load', load, false);
 
 
 
 function load() {
-  document.getElementById('body').style.color = LINE_COLOR;
-   document.getElementById('lower').style.backgroundColor= BACK_COLOR;
-   document.getElementById('upper').style.backgroundColor= BACK_COLOR;
-   document.getElementById('canvas').style.backgroundColor= BACK_COLOR;
-  c = document.getElementById('canvas');
-ctx = c.getContext('2d');
-ctx.font="bold 5vmin Arial";
-
-document.getElementById("retry").innerText=setText("Начать заново", "Start over");
-document.getElementById("check").innerText=setText("Проверить", "Submit");
-document.getElementById("next").innerText=setText("Следующий уровень", "Next level");
-        
-c.addEventListener('mouseup', throwSpear, false);
+setField();
+display_letters();
 
          newGame();
 
 }
 
-function throwSpear() {
-  if (!isGameOn) return;
-  SLICER.catch();
-  MOUSE_ANIMATE_TIME = Date.now();
-  
-}
-
-function check() {
-  isGameOn=false;
-  document.getElementById("check").disabled="true";
-  var slicing = SLICER.getSlicing();
-  var epsilon = 0.05;
-  var precision=SLICER.checkPrecision(GOAL_SLICING, epsilon);
-  if (precision.matched) {
-    var extra_cuts;
-    if (GOAL_SLICING.reduce((accumulator, currentValue) => {
-  return accumulator + currentValue; }, 0) == 1) extra_cuts = precision.totalCuts - GOAL_SLICING.length;
-    else extra_cuts = precision.totalCuts - GOAL_SLICING.length -1;
-    console.log("You succeeded");
-    document.getElementById("next").disabled="";
-    var stars = Math.min(Math.max(Math.ceil(5 - precision.precision * (5/epsilon))-extra_cuts,1),5);
-    document.getElementById("score").style.display="block";
-    document.getElementById("score").textContent=setText("Ваш счет: ","Your score: ") +String.fromCodePoint(11088).repeat(stars);
-    document.getElementById("yours").style.display="block";
-    var your_cuts = [];
-    console.log(precision);
-    for (var i = 0; i < slicing.length; i++) {
-      s = slicing[i];
-      if (precision.matches_inverse[i]>-1) {
-      var sign = (s > GOAL_SLICING[precision.matches_inverse[i]]) ? '+' : '-'; 
-      var delt = s - GOAL_SLICING[precision.matches_inverse[i]];
-      your_cuts.push("<b>"+s+"</b>"+"("+sign+Math.abs(delt.toFixed(2))+")");
-      }
-      else your_cuts.push(s);
+function setField() {
+  for (var i = 1; i <=5; i++) {
+    for (var j = 1; j <=5; j++) {
+      var d = document.createElement("div");
+      d.id="word_"+i+"_pos_"+j;
+      d.className="cell";
       
+      document.getElementById("canvas").appendChild(d);
     }
-    var txt = setText("Ваши разрезы: ","Your slices: ") +your_cuts.join(", ");
-    if (txt.length > 30) document.getElementById("yours").style.fontSize="1.25vw";
-    else if (txt.length > 50) document.getElementById("yours").style.fontSize="0.75vw";
-    else if (txt.length > 100) document.getElementById("yours").style.fontSize="0.4vw";
-    else document.getElementById("yours").style.fontSize="2vw";
-    document.getElementById("yours").innerHTML= txt;
-    document.getElementById("extra").style.display="block";
-    document.getElementById("extra").textContent=setText("Лишних разрезов: ","Extra cuts: ") +extra_cuts;
-    console.log(precision.matches);
-    
-    console.log("Extra cuts: "+extra_cuts);
-    console.log("Precision: "+precision.precision.toFixed(2));
-  }
-  else {
-    document.getElementById("score").style.display="block";
-    document.getElementById("score").textContent=setText("Попробуйте еще раз","Try again");
-    console.log("You failed");
-    console.log(precision.matches);
-  }
-  
-
-}
-
-function retry() {
-  newGame();
-}
-
-function next() {
-  level_no+=1;
-  newGame();
-}
-
-function calculateSlices(slices) {
-  var displayable = [];
-  var calculable = [];
-
-  for (var i = 0; i < slices.length; i++) {
-    displayable.push("1/"+slices[i]);
-    calculable.push(1/slices[i]);
   }
 
-  return {display: displayable, calculate: calculable}
+  for (var i = 1; i <=5; i++) {
+    var d1 = document.createElement("div");
+    d1.id="left_arrow_pos_"+i;
+    d1.className="arrow";
+    d1.innerText=String.fromCodePoint(9664);
+    d1.addEventListener('click', shift);
+    document.getElementById("canvas").appendChild(d1);
+
+    var d2 = document.createElement("div");
+    d2.id="right_arrow_pos_"+i;
+    d2.className="arrow";
+    d2.innerText=String.fromCodePoint(9654);
+    d2.addEventListener('click', shift);
+    document.getElementById("canvas").appendChild(d2);
+
+    var d3 = document.createElement("div");
+    d3.id="up_arrow_pos_"+i;
+    d3.className="arrow";
+    d3.innerText=String.fromCodePoint(9650);
+    d3.addEventListener('click', shift);
+    document.getElementById("canvas").appendChild(d3);
+
+    var d4 = document.createElement("div");
+    d4.id="down_arrow_pos_"+i;
+    d4.className="arrow";
+    d4.innerText=String.fromCodePoint(9660);
+    d4.addEventListener('click', shift);
+    document.getElementById("canvas").appendChild(d4);
+  }
+  resize();
 }
+
+
+function shift() {
+  shifts +=1;
+  console.log(this.id);
+  var splitted = this.id.split('_');
+  var direction = splitted[0];
+  var index = splitted[3] - 1;
+  if (direction == 'left') {
+    var new_string =[' ',' ',' ',' ',' '];
+    for (var i = 0; i < 5; i++) {
+     new_string[(5+i-1)%5]=LETTERS[index][i];
+    }
+    LETTERS[index] = new_string;
+  }
+  if (direction == 'right') {
+    var new_string =[' ',' ',' ',' ',' '];
+    for (var i = 0; i < 5; i++) {
+     new_string[(i+1)%5]=LETTERS[index][i];
+    }
+    LETTERS[index] = new_string;
+  }
+  if (direction == 'up') {
+    var new_string =[' ',' ',' ',' ',' '];
+    for (var i = 0; i < 5; i++) {
+     new_string[(5+i-1)%5]=LETTERS[i][index];
+    }
+    for (var i = 0; i < 5; i++)
+    LETTERS[i][index] = new_string[i];
+  }
+  if (direction == 'down') {
+    var new_string =[' ',' ',' ',' ',' '];
+    for (var i = 0; i < 5; i++) {
+     new_string[(i+1)%5]=LETTERS[i][index];
+    }
+    for (var i = 0; i < 5; i++)
+    LETTERS[i][index] = new_string[i];
+  }
+  display_letters();
+}
+
 
 function newGame() 
   {
     resize();
+    shifts = 0;
   
     isGameOn=true;
-    document.getElementById("score").style.display="none";
-    document.getElementById("yours").style.display="none";
-    document.getElementById("extra").style.display="none";
-    document.getElementById("check").disabled="";
-    document.getElementById("next").disabled="true";
-    var level_iteration = level_no % levels.length;
-    var speed_increaser = Math.floor(level_no / levels.length)+1;
-    slices = calculateSlices(levels[level_iteration].slices);
-    document.getElementById("level").textContent=setText("Уровень ","Level ")+(level_no+1);
-    document.getElementById("goal").textContent=setText("Цель: ","Goal: ")+slices.display;
-    document.getElementById("hint").innerHTML=setText("<i>Кликните мышью внутри рамки, чтобы запустить копье</i>","<i>Click inside the frame to throw a spear</i>");
-    GOAL_SLICING = slices.calculate;
-    SLICER = new Slicer(levels[level_iteration].speed * speed_increaser, NUCLEUS, CIRCLE_RADIUS, WIDTH, HEIGHT);
-c = document.getElementById('canvas');
-
-ctx = c.getContext('2d');
-ctx.font="bold 5vmin Arial";
-draw();
-  
-
-update();
-
-  }
-
-
-
-function update() {
-  if (!isGameOn) {
-       isGameOn=false;
-
-  
     
-    return;
-  }
-  
-ctx = document.getElementById('canvas').getContext('2d');
-ctx.font="bold 5vmin Arial";
-SLICER.step();
 
 draw();
-     
-    window.requestAnimationFrame(update);
-}
+
+
+  }
 
 
 function draw() {
-ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
-ctx.fillStyle = BACK_COLOR;
-ctx.fillRect(0, 0, WIDTH, HEIGHT);
-ctx.font="5vmin Arial";
-
-ctx.fillStyle = LINE_COLOR;
-ctx.strokeStyle = LINE_COLOR;
-ctx.lineWidth="10";
-drawCircle(ctx,NUCLEUS.x, NUCLEUS.y, CIRCLE_RADIUS,null);
-drawCircle(ctx,NUCLEUS.x, NUCLEUS.y, 5,null);
-
-ctx.beginPath();
-ctx.moveTo(0, HEIGHT); 
-ctx.lineTo(WIDTH,HEIGHT);  
-ctx.stroke();
-
-ctx.beginPath();
-ctx.moveTo(0, 0); 
-ctx.lineTo(0,HEIGHT);  
-ctx.stroke();
-
-ctx.beginPath();
-ctx.moveTo(0, 0); 
-ctx.lineTo(WIDTH,0);  
-ctx.stroke();
-
-ctx.beginPath();
-ctx.moveTo(WIDTH, 0); 
-ctx.lineTo(WIDTH,HEIGHT);  
-ctx.stroke(); 
-
-SLICER.draw(ctx);
-
-
-if (MOUSE_ANIMATE_TIME <0 || (Date.now()-MOUSE_ANIMATE_TIME) > 250) {
-    drawCircle(ctx,WIDTH/2, HEIGHT, 20,null);
-
-    drawCircle(ctx,WIDTH/2, HEIGHT - 20, 5,null);
 }
-}
+
