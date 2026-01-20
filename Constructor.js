@@ -1,20 +1,14 @@
-var LETTERS = [['a','b','c','d','e'],['f','g','h','i','j'],['k','l','m','n','o'],['p','q','r','s','t'],['u','v','w','x','y']]
-
-function display_letters_constructor() {
-  for(var i = 0; i < 5; i++) {
-    for(var j = 0; j < 5; j++) {
-      document.getElementById("word_"+(i+1)+"_pos_"+(j+1)).innerText=LETTERS[i][j];
-    }
-  }
-}
+var shifts = 0;
+var emojis='';
 
 function getRandomLevel() {
-  console.log("called");
-  console.log(document.getElementById("lang"));
+  console.log(LETTERS);
+  setField();
+display_letters();
   var items = [];
   var lang = document.getElementById("lang").innerText;
-  if (lang == 'RU') items = words_ru;
-  else items = words_en;
+  if (lang == 'RU') items = words_ru_suggest;
+  else items = words_en_suggest;
   document.getElementById("levelText").value="";
   for (i=0;i<5;i++)
   document.getElementById("levelText").value+=items[Math.floor(Math.random()*items.length)]+"\n";
@@ -28,35 +22,20 @@ function tryOn() {
   console.log(l);
   for (var i = 0; i < 5; i++)
     for (var j = 0; j < 5; j++)
-      LETTERS[i][j]=l[i][j];
+      LETTERS[i][j]["letter"]=l[i][j];
   console.log(LETTERS);
-  display_letters_constructor();
+  display_letters();
 }
 
-function grabField() {
-  var res=[];
-  for (var i = 0; i < 5; i++)
-  { res.push([]);
-    for (var j = 0; j < 5; j++) {
-      res[i].push(document.getElementById("word_"+(i+1)+"_pos_"+(j+1)).innerText);
-    }
-  }
-  return res;
-}
+
 
 function exportRes() {
   var res = grabField();
   console.log(res);
-  var beautified = [];
-  for (var i = 0; i < 5; i++) {
-    beautified.push(res[i].join(''));
-    
-  }
-  console.log(beautified);
   var result = {"goal":document.getElementById("levelText").value.split("\n").filter(item => item.length > 0),
-"current":beautified};
+"current":res};
 console.log(result);
-  document.getElementById("res").value=JSON.stringify(result);
+  document.getElementById("levelres").value=JSON.stringify(result);
 } 
 
 function changeResult() {

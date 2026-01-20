@@ -1,9 +1,21 @@
 <!DOCTYPE html>
 <html oncontextmenu="return false">
     <head>
+      <!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=106376448', 'ym');
+
+    ym(106376448, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/106376448" style="position:absolute; width:0.5px; height:0.5px;left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
         <meta charset="UTF-8">
         <!--<meta http-equiv="refresh" content="0.5" > -->
-        <meta name="Description" CONTENT="Rubikle">
         <meta name="viewport" content="height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
 
         <script src="/sdk.js"></script>
@@ -11,10 +23,14 @@
         <script src="eng_all_fivers.js"></script>
         <script src="functions.js"></script>
         <script src="Helper.js"></script>
+        <script src="common.js"></script>
         <script src="Game.js"></script>
         <script src="levels.js"></script>
 
-    <title>Rubikle</title>
+    <title>Rubikle — when Wordle meets Rubik's cube</title>
+    <meta name="description" content="Rubikle is a Wordle-like web game where you shift letters like Rubik's cube and get new words. Рубикли — браузерная игра в стиле «Вордли», в которой нужно крутить буквы, как кубик Рубика, и собирать слова." />
+    <meta name="keywords" content="wordle, rubikle, Rubik's cube, word game, web game, words, game, вордли, рубикли, кубик Рубика, слова, игра в слова, словесная игра, браузерная игра, игра">
+    <meta name="robots" content="index, follow">
    
     <style>
        
@@ -40,13 +56,14 @@
           text-align: center;
           display: flex;
           justify-content: center; 
-          align-items: center;    
+          align-items: center;
+          font-family: sans-serif;    
         }
 
         .arrow {
           position:absolute;
           text-align: center;
-          border-radius: 3vmin;
+          border-radius: 0.5vmin;
           display: flex;
           justify-content: center; 
           align-items: center;  
@@ -54,22 +71,68 @@
           
         }
 
+        .tab {
+          text-align: center;
+          border-radius: 3vmin;
+          display: flex;
+          justify-content: center; 
+          align-items: center; 
+          white-space: nowrap; 
+          overflow: hidden; 
+          text-overflow:ellipsis; 
+          width: 45%;
+          height:fit-content;
+          padding-left:5vmin;
+          padding-right:5vmin;
+          position:flexbox;
+        }
+
+        button {
+          text-align: center;
+          border-radius: 3vmin;
+          display: flex;
+          justify-content: center; 
+          align-items: center; 
+          white-space: nowrap; 
+          overflow: hidden; 
+          text-overflow:ellipsis; 
+          height: fit-content;
+          position:flexbox;
+        }
+
+        button:disabled {
+          cursor: not-allowed;
+          opacity: 0.7; /* Optional: adds transparency */
+}
+
 
     </style>
 
     </head>
-    <body id = "body" onresize="resize()">
+    <body id = "body" onload="load()" onresize="resize()">
       <div style="position:fixed;" id = "upper">
-        
+        <h1 id="header" style="position:flexbox; top:0px;align-self: flex-start;">Rubikle!</h1>
+        <p id="man" style="position:flexbox;"></p>
+        <div style="display:flex"><div class="tab" id="daily"  onclick="activateDaily()">Ежедневная</div>
+        <div id="nondaily" class="tab" style="background-color:white;" onclick="activateNonDaily()">Случайная</div><select id="lng"  style="position:flexbox;height:fit-content;" onchange="changeResult()">        
+  <option value="EN">EN</option>
+  <option value="RU">RU</option>
+</select>
+     </div>   
       </div>
       <div style="position:fixed;" id="canvas">
       </div>
       
       <div style="position:fixed;" id = "lower">
+      <div style="display:flex">
+        <button id="checkButton" style="width:45%" onclick="check()">Проверить!</button>
+      <button id="changeButton" style="width:45%" onclick="changeGame()">Случайная игра</button></div>
+      <div id="res" style="display:none; position:flexbox;"><textarea rows="5" cols="50" id="results"></textarea>
+      <button id="cpy" disabled onclick="copyRes()">Скопировать результаты</button></div>
         
       </div>
     
-      <p id="lang" style="bottom:0px; left:95vw; position:fixed; display:none;">Language</p>
+      <p id="lang" style="bottom:0px; left:95vw; position:fixed; display:none;">EN</p>
       
     </body>
     
