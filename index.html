@@ -1,19 +1,7 @@
 <!DOCTYPE html>
 <html oncontextmenu="return false">
     <head>
-      <!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=106376448', 'ym');
-
-    ym(106376448, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/106376448" style="position:absolute; width:0.5px; height:0.5px;left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
+     
         <meta charset="UTF-8">
         <!--<meta http-equiv="refresh" content="0.5" > -->
         <meta name="Description" CONTENT="Rubikle">
@@ -44,6 +32,16 @@
        // position: relative;
         padding: 0px;
         }
+
+        .noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
 
         .cell {
           background-color: rgba(205,205,205,255);
@@ -108,24 +106,20 @@
 
     </head>
     <body id = "body" onload="load()" onresize="resize()">
-      <div style="position:fixed;" id = "upper">
-        <h1 id="header" style="position:flexbox; top:0px;align-self: flex-start;">Rubikle!</h1>
-        <div style="display:flex"><div class="tab" id="daily"  onclick="activateDaily()">Ежедневная</div>
-        <div id="nondaily" class="tab" style="background-color:white;" onclick="activateNonDaily()">Случайная</div><select id="lng"  style="position:flexbox;height:fit-content;" onchange="changeResult()">        
-  <option value="EN">EN</option>
-  <option value="RU">RU</option>
-</select>
+      <div style="position:fixed;background-color:rgba(255,255,230,255);padding-left:2.5%;" id = "upper">
+        <h1 id="header" style="position:flexbox; top:0px;align-self: flex-start;"></h1>
+        <div style="display:flex"><button style="width:45%" id = "lng_EN" onclick="setLngEn()"></button><button id = "lng_RU" style="width:45%" onclick="setLngRu()"></button></div>
+      
      </div>   
       </div>
-      <div style="position:fixed;" id="canvas">
+      <div style="position:fixed;background-color:rgba(255,255,230,255); padding-left:2.5%;" id="canvas">
       </div>
       
-      <div style="position:fixed;" id = "lower">
-      <div style="display:flex">
-        <button id="checkButton" style="width:45%" onclick="check()">Проверить!</button>
-      <button id="changeButton" style="width:45%" onclick="changeGame()">Случайная игра</button></div>
-      <div id="res" style="display:none; position:flexbox;"><textarea rows="5" cols="50" id="results"></textarea>
-      <button id="cpy" disabled onclick="copyRes()">Скопировать результаты</button></div>
+      <div style="position:fixed;background-color:rgba(255,255,230,255); padding-left:2.5%;" id = "lower">
+      <div id="b" style="display:flex">
+        <button id="checkButton" style="width:45%" onclick="check()"></button>
+      <button id="changeButton" style="width:45%" onclick="changeGame()"></button></div>
+      <div id="res" style="position:flexbox;height:96%;width:90%;"><div class="noselect" style="border-radius: 1vmin;display:flex;border: 0.25vmin solid #323232;word-break: break-word;margin-top:1vh;margin-bottom:3vh;max-height:96%;min-height:auto" id="results"></div>
         
       </div>
     

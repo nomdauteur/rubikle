@@ -29,17 +29,19 @@ function resize() {
 document.getElementById('upper').style.top = 0 +"px";
 document.getElementById('upper').style.left = (window.innerWidth-w)/2 +"px";
 document.getElementById('upper').style.width = w +"px";
-document.getElementById('upper').style.height = h * 3/16 +"px";
+document.getElementById('upper').style.height = h * 4/16 +"px";
 
 document.getElementById('canvas').style.width = w +"px";
 document.getElementById('canvas').style.height = h * 9/16 +"px";
-document.getElementById('canvas').style.top = h*3/16 +"px";
+document.getElementById('canvas').style.top = h*4/16 +"px";
 document.getElementById('canvas').style.left = (window.innerWidth-w)/2 +"px";
 
 document.getElementById('lower').style.width = w +"px";
-document.getElementById('lower').style.height = h * 4/16 +"px";
-document.getElementById('lower').style.top = h*12/16 +"px";
+document.getElementById('lower').style.height = h * 3/16 +"px";
+document.getElementById('lower').style.top = h*13/16 +"px";
 document.getElementById('lower').style.left = (window.innerWidth-w)/2 +"px";
+
+//document.getElementById('results').style.height = h * 2/16 - document.getElementById('b').style.height - vh(6)  + "px";
 
 for (var i = 1; i <=5; i++) {
   for (var j = 1; j <=5; j++) {
@@ -161,7 +163,7 @@ function grabField() {
 }
 
 function shift() {
-  document.getElementById("res").style.display="none";
+  //document.getElementById("res").style.display="none";
   document.getElementById("checkButton").disabled="";
   shifts +=1;
   console.log(this.id);
@@ -174,14 +176,14 @@ function shift() {
      new_string[(5+i-1)%5]=LETTERS[index][i];
     }
     LETTERS[index] = new_string;
-    emojis+=String.fromCodePoint(8678);
+    emojis+=String.fromCodePoint(8203)+String.fromCodePoint(8678);
   }
   if (direction == 'right') {
     var new_string =[' ',' ',' ',' ',' '];
     for (var i = 0; i < 5; i++) {
      new_string[(i+1)%5]=LETTERS[index][i];
     }     
-    emojis+=String.fromCodePoint(8680);
+    emojis+=String.fromCodePoint(8203)+String.fromCodePoint(8680);
     LETTERS[index] = new_string;
   }
   if (direction == 'up') {
@@ -192,7 +194,7 @@ function shift() {
     for (var i = 0; i < 5; i++)
     LETTERS[i][index] = new_string[i];
 
-    emojis+=String.fromCodePoint(8679);
+    emojis+=String.fromCodePoint(8203)+String.fromCodePoint(8679);
 
   }
   if (direction == 'down') {
@@ -203,8 +205,9 @@ function shift() {
     for (var i = 0; i < 5; i++)
     LETTERS[i][index] = new_string[i];
 
-    emojis+=String.fromCodePoint(8681);
+    emojis+=String.fromCodePoint(8203)+String.fromCodePoint(8681);
   }
+  //document.getElementById("results").innerText=emojis.substring(0,Math.min(50,emojis.length));
   display_letters();
 }
 

@@ -12,7 +12,7 @@ var shifts = 0;
 
 var emojis="";
 
-var mode="daily";
+
 
 var game_no=0;
 
@@ -20,44 +20,25 @@ var loaded = false;
 
 var border_style="0.5vmin solid #323232";
 
-function activateDaily() {
-  if (mode=="daily") return;
-  mode = "daily";
-  document.getElementById("daily").style.border=border_style;
-  document.getElementById("nondaily").style.border="none";
-  newGame();
-}
-
-function activateNonDaily() {
-  if (mode=="nondaily") return;
-  mode = "nondaily";
-  document.getElementById("nondaily").style.border=border_style;
-  document.getElementById("daily").style.border="none";
-  newGame();
-}
-
 function changeGame() {
-  mode = "nondaily";
-  document.getElementById("nondaily").style.border=border_style;
-  document.getElementById("daily").style.border="none";
   newGame();
 }
 
-function changeResult() {
-  const dropdown = document.getElementById("lng");
-  const resultSpan = document.getElementById("lang");
-  // Get the selected value and display it
-  resultSpan.textContent = dropdown.value;
+function setLngEn() {
+  document.getElementById("lang").textContent="EN";
+  document.getElementById("lng_EN").style.border=border_style;
+  document.getElementById("lng_RU").style.border="";
   setLang();
   if (loaded) newGame();
-  
 }
 
-// Set initial text on load
-document.addEventListener('DOMContentLoaded', (event) => {
-    document.getElementById("lng").value = document.getElementById("lang").textContent;
-    changeResult();
-});
+function setLngRu() {
+  document.getElementById("lang").textContent="RU";
+  document.getElementById("lng_EN").style.border="";
+  document.getElementById("lng_RU").style.border=border_style;
+  setLang();
+  if (loaded) newGame();
+}
 
 
 
@@ -89,41 +70,54 @@ function grabField() {
 
 function setLang() {
   document.getElementById("header").textContent=setText("Рубикли!","Rubikle!");
-  document.getElementById("daily").textContent=setText("Ежедневная","Daily");
-  document.getElementById("nondaily").textContent=setText("Случайная","Random");
   document.getElementById("checkButton").textContent=setText("Проверить!","Check!");
   document.getElementById("changeButton").textContent=setText("Другая игра","Change game");
-  document.getElementById("cpy").textContent=setText("Копировать результаты","Copy results");
+  document.getElementById("lng_EN").textContent=setText("АНГЛ","EN");
+  document.getElementById("lng_RU").textContent=setText("РУС","RU");
 
 }
 
 function load() {
   
-  document.getElementById("daily").style.border=border_style;
-  document.getElementById("nondaily").style.border="none";
-setField();
-display_letters();
-loaded = true;
-         newGame();
+
+YaGames.init()
+    .then((ysdk) => {
+        document.getElementById("lang").textContent=ysdk.environment.i18n.lang.toUpperCase();
+        
+
+           while (document.getElementById("lang").textContent == "Language") {
+            sleep(20);
+        } 
+        if (document.getElementById("lang").textContent=='RU') {
+          document.getElementById("lng_EN").style.border="";
+          document.getElementById("lng_RU").style.border=border_style;
+        }
+        else {
+          document.getElementById("lng_EN").style.border=border_style;
+          document.getElementById("lng_RU").style.border="";
+        }
+        setLang();
+        ysdk.features.LoadingAPI?.ready();
+
+        setField();
+        display_letters();
+
+        loaded = true;
+        newGame();
+     
+    })
+    .catch(console.error);
 
 }
 
-function newGame() 
-  {
-    resize();
-    shifts = 0;
+function insideNewGame() {
+   shifts = 0;
     emojis="";
     var lang = document.getElementById("lang").innerText;
-  if (lang == 'RU') levels = levels_ru;
+  if (lang.toUpperCase() == 'RU') levels = levels_ru;
   else levels = levels_en;
-    if (mode == "daily") {
-      var begin_date = new Date("01/22/2026");
-      var date_now = new Date();
-      var diff = Math.floor((date_now.getTime()-begin_date.getTime()) / 1000 / 60 / 60 / 24);
-      game_no = diff+1;
-      level_no = (diff%levels.length);
-    }
-    else level_no = Math.floor(Math.random()*levels.length);
+    level_no = Math.floor(Math.random()*levels.length);
+    game_no = level_no+1;
     console.log(level_no);
     setLetters(levels[level_no]["current"]);
     GOAL = levels[level_no]["goal"];
@@ -131,11 +125,50 @@ function newGame()
     isGameOn=true;
     document.getElementById("checkButton").disabled="";
     
+}
 
+function newGame() 
+  {
+    document.getElementById("results").innerText=setText("Нажимайте на стрелки вокруг поля и собирайте слова. Удачной игры!", "Press arrows around the field to assemble words. Good luck!");
+    resize();
+    YaGames.init()
+
+    .then((ysdk) => {
+        // Informing about starting the gameplay.
+
+        ysdk.features.GameplayAPI?.start();
+
+
+    });
+   
+var shouldShow = Math.random();
+    if (shouldShow > 0.5) {
+    YaGames.init()
+
+    .then((ysdk) => {
+
+          ysdk.adv.showFullscreenAdv({
+
+    callbacks: {
+
+        onClose: function(wasShown) {
+          insideNewGame();
+},
+
+        onError: function(error) {
+
+          console.log(error);
+
+        }
+    }
+      });
+    });
+  }
+  else insideNewGame();
   }
 
 function isWord(word) {
-  var lang = document.getElementById("lang").innerText;
+  var lang = document.getElementById("lang").innerText.toUpperCase();
   if (lang == 'RU') items = words_ru;
   else items = words_en;
   return items.includes(word);
@@ -159,34 +192,27 @@ function check() {
   }
   var res =  {"win":all_words_match,"semiwin":all_words_flag};
   document.getElementById("res").style.display="block";
-  document.getElementById("cpy").disabled="true";
   if (all_words_flag && !all_words_match) {
-    emojis+=String.fromCodePoint(9734);
+    emojis+=String.fromCodePoint(8203)+String.fromCodePoint(9734);
     shifts=0;
-    document.getElementById("results").value=setText("Ого, вы нашли набор слов, о котором мы не подумали! Продолжайте играть до победы. Скопировать результат\n\n","Wow, you found a combination of words different from ours! Go on and play until you win! Copy results:\n\n")+"#rubikle No. "+game_no+": "+emojis;
-      document.getElementById("cpy").disabled="";
+    document.getElementById("results").innerText=setText("Ого, вы нашли набор слов, о котором мы не подумали! Продолжайте играть до победы.\n\n","Wow, you found a combination of words different from ours! Go on and play until you win!\n\n");
   }
   else if (all_words_match) {
-    emojis+=String.fromCodePoint(11088);
+    emojis+=String.fromCodePoint(8203)+String.fromCodePoint(11088);
     shifts=0;
-    document.getElementById("results").value=setText("Вы победили! Поделитесь результатом с друзьями:","You won! Share your result with friends!")+"\n\n#rubikle No. "+game_no+": "+emojis;
-    document.getElementById("cpy").disabled="";
-  } else {
-    emojis+=matches;
-    document.getElementById("results").value=setText("Увы, пока не повезло. Вы нашли "+matches+" слов. Продолжайте играть!", "Sorry, no luck for now. You found "+matches+" words. Keep playing!")+"\n\n#rubikle No. "+game_no+": "+emojis;
-    document.getElementById("cpy").disabled="";
-    
+    document.getElementById("results").innerText=setText("Вы победили!","You won!")+"\n\n"+emojis;
+    YaGames.init()
 
+    .then((ysdk) => {     
+
+        ysdk.features.GameplayAPI?.stop(); 
+      });
+  } else {
+    //emojis+=String.fromCodePoint(8203)+matches;
+    document.getElementById("results").innerText=setText("К сожалению, пока до победы далеко. Вы нашли "+matches +" слов. Не сдавайтесь!","Unfortunately, you did not win yet. You found "+matches+" words. Don't give up!");
+    
   }
   console.log(res);
   console.log(emojis);
 }
 
-function copyRes() {
-   navigator.clipboard.writeText("#rubikle No. "+game_no+": "+emojis)
-    .then(() => {
-    })
-    .catch(err => {
-      console.error('Error in copying text: ', err);
-    });
-}
